@@ -1,0 +1,30 @@
+# Asher Plichta
+
+> IT, live production and media. Technology enthusiast, IT intern, and media producer passionate about solving problems and bringing ideas to life through technology.
+
+## Experience
+
+- IT intern at Highview Baptist Church for four summers: IT support (computers, accounts and networks), audiovisual systems behind services, and making sure it all works at services and events.
+
+## Projects
+
+- Sports broadcasting: live production with vMix, cameras and video boards.
+- Church IT & AV: IT support and audiovisual systems at Highview Baptist Church.
+- Podcast & media: multi-camera recording, Riverside and professional audio workflows.
+
+## Skills
+
+- IT & networking: IT support, networking, troubleshooting, audiovisual systems.
+- Broadcasting: live production, vMix, cameras, video boards.
+- Audio & media: audio engineering, multi-camera recording, Riverside, podcast production.
+
+## Pages
+
+- [About](/about)
+- [Experience](/experience)
+- [Projects](/projects)
+- [Contact](/contact)
+
+## Contact
+
+- Email: asher.plichta11@gmail.com
