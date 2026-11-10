@@ -1,0 +1,790 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>St. X Basketball Stats</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Caslon+Text:ital@1&display=swap">
+<style>
+/* Layout: Pine scoreboard header with gold numerals, sticky section tabs, one content column.
+   Stats tables and charts sit in scroll frames so phones never scroll sideways. */
+:root{
+  /* Brand type: DM Sans primary, Libre Caslon Text italic for accents */
+  --font-display:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-accent:"Libre Caslon Text",Georgia,"Times New Roman",serif;
+  /* St. X brand guide: Pine 97 ground (60%), Pine 20 (30%), Gold 55 (10%) */
+  --bg:#F6F9F5;
+  --surface:#ffffff;
+  --surface-2:#DFEDDE;
+  --ink:#062D20;
+  --muted:#46675a;
+  --line:#CEE5CD;
+  --brand:#12543F;
+  --on-brand:#F6F9F5;
+  --gold:#F3BA29;
+  --brand-text:var(--brand);
+  --brand-tint:#DFEDDE;
+  --bar:var(--brand);
+  --win:#1F7A32;
+  --loss:#b3362f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#021811;--surface:#062D20;--surface-2:#0d3a2b;--ink:#DFEDDE;--muted:#98CDA3;--line:#1b4d3b;
+    --brand-text:var(--gold);--brand-tint:#0f3b2c;
+    --bar:var(--gold);--win:#54F86A;--loss:#ef7f76;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#021811;--surface:#062D20;--surface-2:#0d3a2b;--ink:#DFEDDE;--muted:#98CDA3;--line:#1b4d3b;
+  --brand-text:var(--gold);--brand-tint:#0f3b2c;
+  --bar:var(--gold);--win:#54F86A;--loss:#ef7f76;color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--brand);z-index:10}
+a{color:var(--brand-text)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brand-text);outline-offset:2px}
+.wrap{max-width:1120px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* header */
+.hero{background:var(--brand);color:var(--on-brand)}
+.hero-in{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-block:22px 18px}
+.mark{display:flex;align-items:center;gap:14px}
+.mark-x{font-family:var(--font-display);font-weight:700;font-size:clamp(40px,8vw,60px);line-height:.9;letter-spacing:-.02em;color:var(--gold)}
+.mark-sub{display:flex;flex-direction:column;gap:2px;font-size:15px;font-weight:600;border-left:2px solid var(--gold);padding-left:14px}
+.mark-sub span:last-child{opacity:.9;font-family:var(--font-accent);font-style:italic;font-weight:400;font-size:14px}
+.hero-rec{display:flex;flex-direction:column;align-items:flex-end;line-height:1}
+.hero-rec .lbl{font-size:13px;opacity:.85;font-weight:500}
+.hero-rec .rec{font-family:var(--font-display);font-weight:700;font-size:44px;font-variant-numeric:tabular-nums;margin-top:4px;color:var(--gold)}
+
+/* nav */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.tabs-in{display:flex;align-items:stretch;gap:26px;overflow-x:auto}
+.tabs a{display:inline-flex;align-items:center;gap:6px;padding:14px 2px 12px;font-weight:600;font-size:14px;color:var(--muted);text-decoration:none;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs a:hover{color:var(--ink)}
+.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--gold)}
+.tabs .admin-link{margin-left:auto;font-weight:500;font-size:13px}
+
+/* page */
+.main{padding-block:28px 56px;min-width:0}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(32px,6vw,44px);line-height:1.05;letter-spacing:-.015em;margin:0 0 6px;text-wrap:balance}
+h2{font-size:19px;letter-spacing:-.005em;color:var(--ink);font-weight:700;margin:34px 0 12px}
+.lede{color:var(--muted);margin:0 0 20px;max-width:62ch;font-family:var(--font-accent);font-style:italic;font-size:16.5px;line-height:1.6}
+.fine{color:var(--muted);font-size:12.5px;margin:12px 0 0;max-width:70ch}
+.note{background:var(--brand-tint);border-radius:8px;padding:10px 14px;margin:0 0 16px;font-size:14px;max-width:80ch}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface);margin:14px 0 20px}
+.seg a,.seg button{padding:8px 16px;font-size:14px;font-weight:600;text-decoration:none;color:var(--muted);background:none;border:0;cursor:pointer}
+.seg a[aria-current="page"],.seg button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+.seg a+a,.seg button+button{border-left:1px solid var(--line)}
+
+/* scoreboard strips */
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:22px}
+.strip>div{background:var(--surface);padding:12px 16px 13px;min-width:0}
+.strip .k{display:block;font-size:13px;color:var(--muted);font-weight:500}
+.strip .v{display:block;font-family:var(--font-display);font-weight:700;font-size:34px;line-height:1.1;font-variant-numeric:tabular-nums;margin-top:2px}
+.strip .s{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.next{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:10px 14px;margin:0 0 20px}
+.next .k{color:var(--muted);font-size:13px;font-weight:500}
+.next span:last-child{color:var(--muted)}
+
+/* tables */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+table.stats{min-width:820px}
+th,td{padding:10px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:0}
+th{background:var(--surface-2);font-size:13px;color:var(--muted);font-weight:600}
+th.left,td.left{text-align:left}
+th:first-child,td:first-child{position:sticky;left:0;z-index:1;text-align:left}
+td:first-child{background:var(--surface)}
+th:first-child{background:var(--surface-2)}
+tbody tr:hover td{background:var(--brand-tint)}
+.th{background:none;border:0;padding:0;cursor:pointer;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;font-size:inherit;color:inherit}
+.th:hover{color:var(--ink)}
+.jn{display:inline-block;min-width:26px;margin-right:8px;font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--brand-text)}
+.pn{font-weight:600}
+.dim{color:var(--muted)}
+.res.w{color:var(--win);font-weight:600}
+.res.l{color:var(--loss);font-weight:600}
+td.wrapcell{white-space:normal}
+
+/* deflections */
+.bars{list-style:none;margin:0;padding:0}
+.bar-row{display:grid;grid-template-columns:minmax(96px,11rem) 1fr 4.5ch;gap:12px;align-items:center;padding:6px 0}
+.bar-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{height:22px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.bar-fill{display:block;height:100%;background:var(--bar);border-radius:4px}
+.bar-val{text-align:right;font-family:var(--font-display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+svg.chart{display:block}
+svg.chart text{font-family:var(--font-body);font-size:11px;fill:var(--muted)}
+svg.chart text.val{fill:var(--ink);font-family:var(--font-display);font-weight:700;font-size:15px}
+svg.chart .grid{stroke:var(--line);stroke-width:1}
+svg.chart .bar{fill:var(--bar)}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:22px 20px;color:var(--muted);background:var(--surface)}
+.empty strong{color:var(--ink)}
+.empty .btn{margin-top:12px}
+
+/* history */
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:96px 1fr;gap:0 4px}
+.tl .yr{font-family:var(--font-display);font-weight:700;font-size:28px;line-height:1.1;color:var(--brand-text);padding-top:1px;font-variant-numeric:tabular-nums}
+.tl .bd{position:relative;border-left:2px solid var(--line);padding:0 0 28px 22px;min-width:0}
+.tl .bd::before{content:"";position:absolute;left:-6px;top:9px;width:10px;height:10px;border-radius:50%;background:var(--brand-text)}
+.tl h3{margin:0 0 3px;font-size:17px;line-height:1.3}
+.tl p{margin:0;max-width:64ch;color:var(--muted)}
+.src{columns:2 280px;column-gap:32px;padding-left:18px;margin:0;font-size:13.5px}
+.src li{margin-bottom:5px;break-inside:avoid}
+.staff{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 24px;margin:0;padding:0;list-style:none}
+.staff b{display:block}
+.staff span{color:var(--muted);font-size:13px}
+
+/* admin */
+.gate{max-width:420px}
+.gate form{display:flex;flex-direction:column;gap:10px}
+.err{color:var(--loss);font-size:13.5px;min-height:1.3em;margin:0}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted)}
+input,select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:84px;line-height:1.45}
+input[type="color"]{padding:2px;height:38px;width:64px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:6px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:14px;cursor:pointer;width:auto}
+.btn:hover{border-color:var(--brand-text)}
+.btn.primary{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.btn.danger{color:var(--loss)}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.btn[disabled]{opacity:.5;cursor:default}
+.atabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 18px}
+.atabs button{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:13.5px;cursor:pointer;color:var(--muted)}
+.atabs button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.adminbar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:4px}
+table.edit{min-width:1100px}
+table.edit th,table.edit td{padding:6px 6px}
+table.edit input,table.edit select{padding:6px 7px;font-size:13.5px}
+table.edit td.s input{width:58px;text-align:right}
+table.edit td.m input{width:150px}
+table.edit td.nm input{width:190px}
+table.edit td.t input{width:68px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 18px}
+.rows{display:grid;gap:12px}
+.rowcard{display:grid;grid-template-columns:110px 1fr auto;gap:10px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+.rowcard.two{grid-template-columns:1fr 1fr auto}
+.rowcard .wide{grid-column:2}
+.savebar{position:sticky;bottom:0;z-index:4;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:22px;box-shadow:0 -6px 18px color-mix(in srgb,var(--ink) 8%,transparent)}
+.savebar .st{font-size:13.5px;color:var(--muted)}
+.savebar .st.dirty{color:var(--ink);font-weight:600}
+.savebar .st.bad{color:var(--loss);font-weight:600}
+.warn{background:color-mix(in srgb,var(--loss) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--loss) 40%,var(--line));border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:14px}
+.hint{color:var(--muted);font-size:13.5px;margin:0 0 12px;max-width:76ch}
+
+.foot{border-top:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12.5px}
+.foot .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:6px 24px;justify-content:space-between}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:calc(100% - 32px)}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion: reduce){#toast{transition:none}}
+@media (max-width:560px){
+  .hero-rec{align-items:flex-start}
+  .tl li{grid-template-columns:70px 1fr}
+  .tl .yr{font-size:22px}
+  .rowcard,.rowcard.two{grid-template-columns:1fr}
+  .rowcard .wide{grid-column:1}
+  .bar-row{grid-template-columns:minmax(84px,8rem) 1fr 4ch;gap:8px}
+}
+</style>
+
+<header class="hero">
+  <div class="wrap hero-in">
+    <div class="mark">
+      <span class="mark-x">St. X</span>
+      <span class="mark-sub"><span>Tiger basketball</span><span>Louisville, Kentucky</span></span>
+    </div>
+    <div class="hero-rec"><span class="lbl" id="h-lbl">2026–27 record</span><span class="rec" id="h-rec">0–0</span></div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections">
+  <div class="wrap tabs-in">
+    <a href="#players" data-r="players">Players</a>
+    <a href="#team" data-r="team">Team</a>
+    <a href="#history" data-r="history">History</a>
+    <a href="#admin" data-r="admin" class="admin-link"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Admin</a>
+  </div>
+</nav>
+<main id="main" class="wrap main"></main>
+<footer class="foot">
+  <div class="wrap">
+    <span>Saint Xavier High School · 1609 Poplar Level Rd, Louisville, KY 40217</span>
+    <span>Official records: <a href="https://khsaa.org/basketball/" target="_blank" rel="noopener">KHSAA</a> · <a href="https://www.maxpreps.com/ky/louisville/st-xavier-tigers/basketball/" target="_blank" rel="noopener">MaxPreps</a> <span id="foot-status"></span></span>
+  </div>
+</footer>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- admin gate: salted SHA-256, checked in the browser ---------- */
+var PW_HASH='8c515d8a4d7d8fa721d11b8d5acc512e3c7434063097344d2fcb330f0db2b565', PW_SALT='stx-hoops-26-27:';
+
+/* ---------- helpers ---------- */
+var $=function(s){return document.querySelector(s)};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var n=function(v){var x=Number(v);return isFinite(x)?x:0};
+var clone=function(o){return JSON.parse(JSON.stringify(o))};
+var uid=function(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,5)};
+var f1=function(v){return v==null?'–':v.toFixed(1)};
+var DASH='–';
+
+/* ---------- starter data (projected 2026-27 program roster; edit in Admin) ---------- */
+function P(id,num,name,cls,pos,ht){return {id:id,num:num,name:name,cls:cls,pos:pos,ht:ht,gp:0,pts:0,reb:0,ast:0,stl:0,blk:0,tov:0,fgm:0,fga:0,tpm:0,tpa:0,ftm:0,fta:0}}
+var HSX='Saint Xavier High School';
+function G(id,date,time,opp,loc,venue,type){return {id:id,date:date,time:time,opp:opp,loc:loc,venue:venue,type:type||'Reg',pf:null,pa:null,defl:{}}}
+var SEED={
+  v:1,
+  settings:{season:'2026-27',team:'St. Xavier Tigers',coach:'Kevin Klein',home:'Willis Arena (2,000 seats)',district:'26th District · 7th Region',brand:'#12543F'},
+  staff:[
+    {id:'st1',name:'Bryan Just',role:'Assistant coach'},
+    {id:'st2',name:'Connor McKim',role:'Assistant coach'},
+    {id:'st3',name:'Mike Glaser',role:'Assistant coach'},
+    {id:'st4',name:'Brad Lies',role:'Statistician'}
+  ],
+  players:[
+    P('p1','11','Campbell Webber','Sr','PG/SG','6\'0"'),
+    P('p2','21','Ethan Petter','Sr','','6\'3"'),
+    P('p3','22','Cooper Yates','Sr','','5\'7"'),
+    P('p4','3','Ben Anderson','Jr','','5\'9"'),
+    P('p5','4','Jordan Jackson','Jr','F','6\'6"'),
+    P('p6','5','Joshua Lindsay','Jr','SG','6\'0"'),
+    P('p7','12','Beck Jarrett','Jr','','5\'8"'),
+    P('p8','13','Carter Klein','Jr','','6\'3"'),
+    P('p9','15','Braylon Garr','Jr','',''),
+    P('p10','34','Lincoln Swintosky','Jr','','6\'4"'),
+    P('p11','','Isaiah Daniels','Jr','','5\'7"'),
+    P('p12','','Calvin Duthie','Jr','','6\'2"'),
+    P('p13','','Caden Etscorn','Jr','SG','6\'1"'),
+    P('p14','','James Hannigan III','Jr','','6\'2"'),
+    P('p15','32','Michael Bryant','So','','6\'1"'),
+    P('p16','','Braden Bishop','So','','5\'6"'),
+    P('p17','','Braylon Glenn','So','',''),
+    P('p18','','Derez Grider','So','','6\'2"'),
+    P('p19','','Nolan Harris','So','',''),
+    P('p20','','Brady Logsdon','So','','5\'9"'),
+    P('p21','','Jaih Mack-Taylor','So','','5\'8"')
+  ],
+  games:[
+    G('g1','2026-12-04','7:30 PM','Nazareth (NY)','H',HSX),
+    G('g2','2026-12-05','3:00 PM','Butler High School','H',HSX),
+    G('g3','2026-12-09','7:30 PM','Moore High School','A','Moore High School'),
+    G('g4','2026-12-10','6:30 PM','Louisville Collegiate School','A','Louisville Collegiate School'),
+    G('g5','2026-12-12','7:45 PM','Princeton (OH)','H',HSX),
+    G('g6','2026-12-13','6:45 PM','Massanutten (VA)','H',HSX),
+    G('g7','2026-12-15','6:30 PM','Louisville Collegiate School','A','Louisville Collegiate School'),
+    G('g8','2026-12-17','TBD','King of the Bluegrass','N','Fairdale High School','Tourn'),
+    G('g9','2026-12-27','TBD','Seton Hall Prep (NJ)','N','Achievement First'),
+    G('g10','2026-12-28','TBD','Eagle Academy (NY)','N','Achievement First'),
+    G('g11','2026-12-29','TBD','Bishop Loughlin (NY)','A','Bishop Loughlin'),
+    G('g12','2027-01-03','TBD','Link Academy (MO)','H',HSX),
+    G('g13','2027-01-06','7:30 PM','Seneca High School','H',HSX),
+    G('g14','2027-01-10','All day','Louisville Invitational Tournament','N','Valley High School','Tourn'),
+    G('g15','2027-01-19','7:30 PM','DeSales High School','A','DeSales High School'),
+    G('g16','2027-01-22','7:30 PM','Male High School','H',HSX),
+    G('g17','2027-01-26','7:30 PM','Eastern High School','A','Eastern High School'),
+    G('g18','2027-01-29','7:00 PM','Trinity High School','A','Trinity High School'),
+    G('g19','2027-02-02','7:30 PM','Jeffersontown High School','H',HSX),
+    G('g20','2027-02-05','7:30 PM','Ballard High School','A','Ballard High School'),
+    G('g21','2027-02-06','1:00 PM','Brown School','H',HSX),
+    G('g22','2027-02-09','7:30 PM','Christian Academy-Louisville','A','Christian Academy-Louisville'),
+    G('g23','2027-02-12','7:30 PM','North Oldham High School','A','North Oldham High School'),
+    G('g24','2027-02-15','7:30 PM','DuPont Manual High School','N','Mercy Academy'),
+    G('g25','2027-02-19','7:30 PM','Henry Clay High School','H',HSX)
+  ],
+  facts:[
+    {id:'f1',label:'KHSAA state titles',value:'4'},
+    {id:'f2',label:'Title years',value:'1926 · 1935 · 1958 · 1962'},
+    {id:'f3',label:'Program since',value:'1911'},
+    {id:'f4',label:'Home court',value:'Willis Arena'}
+  ],
+  history:[
+    {id:'h1',year:'1911',title:'The first team',body:'St. Xavier\'s first basketball team takes the court as the St. Xavier\'s College Saints, starting a program that now spans more than a century.'},
+    {id:'h2',year:'1926',title:'First state championship',body:'The Tigers win the school\'s first KHSAA state title, making St. X the first private school in Kentucky to claim a state basketball championship.'},
+    {id:'h3',year:'1935',title:'Second state title',body:'St. X adds a second KHSAA championship and goes on to win a national Catholic title in Chicago.'},
+    {id:'h4',year:'1938',title:'National Catholic champions',body:'The 1938 squad wins the National Catholic High School Championship in Chicago, following the 1926 and 1935 teams.'},
+    {id:'h5',year:'1941 · 1943',title:'Runner-up twice',body:'Inez beats St. X 35–27 in the 1941 final and Hindman wins 29–26 in 1943, both at Alumni Gym in Lexington.'},
+    {id:'h6',year:'1951',title:'Central vs. St. X',body:'A game between Central High School and Saint X is remembered as the beginning of the end of segregation in Louisville and Kentucky high school sports.'},
+    {id:'h7',year:'1958',title:'Third state title',body:'Coach Gene Rhodes, in his fourth season at St. X, leads a team that was hardly favored to win the Sweet 16.'},
+    {id:'h8',year:'1962',title:'Fourth state title',body:'Coach Joe Reibel\'s Tigers beat Ashland 62–58 in the championship game at Freedom Hall. The four titles tie St. X for third most in KHSAA history.'},
+    {id:'h9',year:'2009',title:'Willis Arena opens',body:'The 2,000-seat gym gets its christening on January 20 with a 73–53 win over South Oldham.'},
+    {id:'h10',year:'2025',title:'Louisville Invitational repeat',body:'Led by Jeremiah Jackson, St. X wins the Louisville Invitational for the second year in a row, the fourth LIT title in school history, opening with a 95–60 win over Christian Academy-Louisville.'},
+    {id:'h11',year:'2025',title:'7th Region champions',body:'A 59–44 win over Trinity on March 10 extends the Tigers\' winning streak to 20 and sends them to the Sweet 16. MaxPreps ranked St. X first in Kentucky during the run, and Jeffersontown ended the season with a 64–59 first-round win.'},
+    {id:'h12',year:'2026',title:'28–8 and a Sweet 16 final',body:'St. X finishes 28–8 and reaches the KHSAA Sweet 16 championship game at Rupp Arena, getting past Covington Catholic, North Laurel and Grayson County before facing George Rogers Clark.'},
+    {id:'h13',year:'2026',title:'Hanke at Louisville',body:'Will Hanke, a 2025 St. X graduate, is a sophomore guard (6\'4") on the University of Louisville roster.'},
+    {id:'h14',year:'2026–27',title:'This season',body:'The Tigers start the year at 0–0 under head coach Kevin Klein. Box scores, deflections and team numbers are tracked on this site.'}
+  ]
+};
+var HIST_SOURCES=[
+  ['Saint Xavier athletics, basketball','https://www.saintx.com/athletics/teams-schedules/team-page/~athletics-team-id/22'],
+  ['KHSAA Boys’ Sweet 16 record book (PDF)','https://kdla.ky.gov/Library-Support/kits/Documents/Adult/Kentucky%20Basketball/KHSAABoysSweet16Records.pdf'],
+  ['KHSAA, remembering Gene Rhodes and the 1958 champs','https://khsaa.org/?p=25664'],
+  ['KHSAA basketball and Sweet 16 stats','https://khsaa.org/basketball/'],
+  ['MaxPreps, St. Xavier basketball','https://www.maxpreps.com/ky/louisville/st-xavier-tigers/basketball/'],
+  ['Xavier News, Louisville sports history','https://xaviernews.org/13225/features/louisville-sports-history-you-should-know'],
+  ['Xavier News, back-to-back Louisville Invitational','https://xaviernews.org/16299/sports/tiger-basketball-2-trophies-down']
+];
+
+/* ---------- state ---------- */
+var S=clone(SEED), lastSaved=clone(SEED);
+var dirty=false, unlocked=false, adminTab='roster', sortKey=null, sortDir=1;
+var defMode='total', demo=false, confirmReset=false, writeOk=null, fails=0, lockUntil=0;
+var db=null, dataNote='', saveMsg='', saveBad=false;
+try{ if(sessionStorage.getItem('stxAdmin')===PW_HASH) unlocked=true; }catch(e){}
+
+function normalize(d){
+  var o=clone(SEED), x=d||{};
+  o.settings=Object.assign({},o.settings,x.settings||{});
+  ['staff','players','games','facts','history'].forEach(function(k){ if(Array.isArray(x[k])) o[k]=x[k]; });
+  o.games.forEach(function(g){
+    g.pf=(g.pf===''||g.pf==null)?null:n(g.pf);
+    g.pa=(g.pa===''||g.pa==null)?null:n(g.pa);
+    g.defl=g.defl&&typeof g.defl==='object'?g.defl:{};
+    g.time=g.time||''; g.venue=g.venue||'';
+  });
+  return o;
+}
+
+/* ---------- calculations ---------- */
+function calc(p){
+  var gp=n(p.gp);
+  var pg=function(v){return gp>0?n(v)/gp:null};
+  var pc=function(m,a){return n(a)>0?100*n(m)/n(a):null};
+  return {gp:gp,pts:n(p.pts),ppg:pg(p.pts),rpg:pg(p.reb),apg:pg(p.ast),spg:pg(p.stl),bpg:pg(p.blk),tpg:pg(p.tov),
+          fg:pc(p.fgm,p.fga),tp:pc(p.tpm,p.tpa),ft:pc(p.ftm,p.fta)};
+}
+var played=function(g){return g.pf!=null&&g.pa!=null};
+function gamesByDate(){
+  return S.games.map(function(g,i){return {g:g,i:i}}).sort(function(a,b){
+    var x=a.g.date||'9999',y=b.g.date||'9999'; return x<y?-1:x>y?1:a.i-b.i;
+  }).map(function(r){return r.g});
+}
+function fmtDate(iso){
+  if(!iso) return 'TBD';
+  var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso); if(!m) return iso;
+  var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m[2]-1];
+  return mo+' '+(+m[3]);
+}
+function shortDate(iso){var m=/^\d{4}-(\d{2})-(\d{2})$/.exec(iso||'');return m?(+m[1])+'/'+(+m[2]):'TBD'}
+function teamRecord(){
+  var list=gamesByDate().filter(played), r={w:0,l:0,hw:0,hl:0,aw:0,al:0,dw:0,dl:0,pf:0,pa:0,streak:'',n:list.length};
+  list.forEach(function(g){
+    var w=g.pf>g.pa; r.pf+=g.pf; r.pa+=g.pa;
+    if(w) r.w++; else r.l++;
+    if(g.loc==='H'){ w?r.hw++:r.hl++; } else if(g.loc==='A'){ w?r.aw++:r.al++; }
+    if(g.type==='District'){ w?r.dw++:r.dl++; }
+  });
+  if(list.length){
+    var last=list[list.length-1].pf>list[list.length-1].pa, c=0;
+    for(var i=list.length-1;i>=0;i--){ if((list[i].pf>list[i].pa)===last) c++; else break; }
+    r.streak=(last?'W':'L')+c;
+  }
+  return r;
+}
+var rec=function(w,l){return w+'–'+l};
+
+/* ---------- routing ---------- */
+var ROUTES=['players','players-deflections','team','history','admin'];
+function route(){var h=(location.hash||'').replace('#','');return ROUTES.indexOf(h)>-1?h:'players'}
+
+/* ---------- views ---------- */
+var CLS={Sr:0,Jr:1,So:2,Fr:3};
+function ranked(){
+  var rows=S.players.map(function(p){return {p:p,d:calc(p)}});
+  var any=rows.some(function(r){return r.d.gp>0});
+  var key=sortKey||(any?'ppg':'cls'), dir=sortKey?sortDir:(any?-1:1);
+  var val=function(r){
+    if(key==='cls') return CLS[r.p.cls]!=null?CLS[r.p.cls]:9;
+    if(key==='name') return r.p.name.toLowerCase();
+    return r.d[key];
+  };
+  rows.sort(function(a,b){
+    var x=val(a),y=val(b);
+    if(x==null&&y==null) return 0;
+    if(x==null) return 1; if(y==null) return -1;
+    if(x<y) return -dir; if(x>y) return dir;
+    var an=a.p.num===''?999:n(a.p.num), bn=b.p.num===''?999:n(b.p.num);
+    return an!==bn?an-bn:a.p.name.localeCompare(b.p.name);
+  });
+  return {rows:rows,any:any};
+}
+
+function viewPlayers(){
+  var R=ranked(), rows=R.rows;
+  var lead=function(k,label,fmt){
+    var best=null;
+    rows.forEach(function(r){var v=r.d[k]; if(v!=null&&v>0&&(!best||v>best.v)) best={v:v,p:r.p}});
+    return '<div><span class="k">'+label+'</span><span class="v">'+(best?fmt(best.v):DASH)+'</span><span class="s">'+(best?esc(best.p.name):'Awaiting first game')+'</span></div>';
+  };
+  var th=function(k,l,left){
+    var on=sortKey===k;
+    return '<th class="'+(left?'left':'')+'" aria-sort="'+(on?(sortDir>0?'ascending':'descending'):'none')+'"><button class="th" data-act="sort" data-key="'+k+'">'+l+(on?(sortDir>0?' ▲':' ▼'):'')+'</button></th>';
+  };
+  var body=rows.map(function(r){
+    var p=r.p,d=r.d;
+    return '<tr><td><span class="jn">'+esc(p.num||'')+'</span><span class="pn">'+esc(p.name)+'</span></td>'+
+      '<td class="left dim">'+esc(p.cls)+'</td><td class="left dim">'+esc(p.pos||DASH)+'</td><td class="left dim">'+esc(p.ht||DASH)+'</td>'+
+      '<td>'+d.gp+'</td><td>'+f1(d.ppg)+'</td><td>'+f1(d.rpg)+'</td><td>'+f1(d.apg)+'</td><td>'+f1(d.spg)+'</td><td>'+f1(d.bpg)+'</td><td>'+f1(d.tpg)+'</td>'+
+      '<td>'+f1(d.fg)+'</td><td>'+f1(d.tp)+'</td><td>'+f1(d.ft)+'</td><td><b>'+d.pts+'</b></td></tr>';
+  }).join('');
+  return '<h1>Player stats</h1>'+
+    '<div class="seg" role="tablist"><a href="#players" aria-current="page">Season stats</a><a href="#players-deflections">Deflections</a></div>'+
+    '<div class="strip">'+lead('ppg','Points / game',f1)+lead('rpg','Rebounds / game',f1)+lead('apg','Assists / game',f1)+lead('spg','Steals / game',f1)+'</div>'+
+    (R.any?'':'<p class="note">No box scores are in yet. Averages fill in as the 2026–27 season is entered. Names are the projected program roster, with jersey numbers carried over from last season.</p>')+
+    '<div class="scroll"><table class="stats"><caption class="sr">2026–27 player season stats</caption><thead><tr>'+
+    th('name','Player',true)+th('cls','Cl',true)+'<th class="left">Pos</th><th class="left">Ht</th>'+
+    th('gp','GP')+th('ppg','PPG')+th('rpg','RPG')+th('apg','APG')+th('spg','SPG')+th('bpg','BPG')+th('tpg','TO')+th('fg','FG%')+th('tp','3P%')+th('ft','FT%')+th('pts','PTS')+
+    '</tr></thead><tbody>'+body+'</tbody></table></div>'+
+    '<p class="fine">Per-game numbers are season totals divided by games played. Shooting percentages come from made and attempted totals. Sort any column by selecting its heading.</p>';
+}
+
+var DEMO_NAMES=['Player A','Player B','Player C','Player D','Player E','Player F','Player G','Player H'];
+var DEMO_ROWS=[[3,4,2,5,3,4],[2,3,3,2,4,2],[1,2,1,3,2,2],[4,2,5,3,4,3],[0,1,2,1,1,2],[2,2,1,1,3,2],[1,0,1,2,1,1],[0,1,0,1,1,0]];
+function deflSource(){
+  if(demo){
+    var pl=DEMO_NAMES.map(function(nm,i){return {id:'d'+i,name:nm,gp:6}});
+    var gm=[0,1,2,3,4,5].map(function(gi){
+      var d={}; pl.forEach(function(p,i){d[p.id]=DEMO_ROWS[i][gi]});
+      return {label:'G'+(gi+1),sub:'Sample',defl:d};
+    });
+    return {players:pl,games:gm};
+  }
+  return {
+    players:S.players.map(function(p){return {id:p.id,name:p.name,gp:n(p.gp)}}),
+    games:gamesByDate().map(function(g){return {label:shortDate(g.date),sub:g.opp||'',defl:g.defl||{}}})
+  };
+}
+function niceStep(max){
+  var raw=Math.max(1,max)/4, mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)), nm=raw/mag;
+  return Math.max(1,(nm<=1?1:nm<=2?2:nm<=5?5:10)*mag);
+}
+function trendSvg(items){
+  var W=Math.max(520,items.length*60+60), H=236, Lm=36, Tm=22, Bm=50, Rm=14;
+  var max=Math.max.apply(null,items.map(function(i){return i.v}).concat([1]));
+  var step=niceStep(max), top=Math.ceil(max/step)*step, iw=W-Lm-Rm, ih=H-Tm-Bm;
+  var slot=iw/items.length, bw=Math.min(34,slot*0.6), out='';
+  for(var v=0;v<=top;v+=step){
+    var y=Tm+ih-(v/top)*ih;
+    out+='<line class="grid" x1="'+Lm+'" x2="'+(W-Rm)+'" y1="'+y+'" y2="'+y+'"/><text x="'+(Lm-8)+'" y="'+(y+4)+'" text-anchor="end">'+v+'</text>';
+  }
+  items.forEach(function(it,i){
+    var cx=Lm+slot*(i+.5), h=(it.v/top)*ih, y=Tm+ih-h;
+    out+='<rect class="bar" x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3"/>'+
+      '<text class="val" x="'+cx+'" y="'+(y-5)+'" text-anchor="middle">'+it.v+'</text>'+
+      '<text x="'+cx+'" y="'+(H-Bm+16)+'" text-anchor="middle">'+esc(it.label)+'</text>'+
+      '<text x="'+cx+'" y="'+(H-Bm+30)+'" text-anchor="middle">'+esc((it.sub||'').slice(0,9))+'</text>';
+  });
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="Team deflections by game">'+out+'</svg>';
+}
+
+function viewDeflections(){
+  var src=deflSource(), rows=src.players.map(function(p){
+    var tot=0,high=0;
+    src.games.forEach(function(g){var v=n(g.defl[p.id]); tot+=v; if(v>high) high=v;});
+    return {name:p.name,gp:p.gp,tot:tot,high:high,pg:p.gp>0?tot/p.gp:null};
+  }).filter(function(r){return r.tot>0});
+  var head='<h1>Player stats</h1><div class="seg"><a href="#players">Season stats</a><a href="#players-deflections" aria-current="page">Deflections</a></div>';
+  if(!rows.length){
+    return head+'<div class="empty"><strong>No deflections charted yet.</strong><br>Deflections are logged by game, so this chart fills in once a game and its deflection counts are entered in Admin.<br><button class="btn" data-act="demo-on">See a sample chart</button></div>';
+  }
+  var pm=defMode==='pg';
+  rows.sort(function(a,b){
+    var x=pm?(a.pg==null?-1:a.pg):a.tot, y=pm?(b.pg==null?-1:b.pg):b.tot;
+    return y-x||b.tot-a.tot||a.name.localeCompare(b.name);
+  });
+  var val=function(r){return pm?r.pg:r.tot};
+  var mx=Math.max.apply(null,rows.map(function(r){return val(r)||0}).concat([0.0001]));
+  var top=rows[0], teamTot=rows.reduce(function(s,r){return s+r.tot},0);
+  var items=src.games.map(function(g){
+    var t=0; Object.keys(g.defl).forEach(function(k){t+=n(g.defl[k])});
+    return {label:g.label,sub:g.sub,v:t};
+  });
+  var gCount=items.filter(function(i){return i.v>0}).length;
+  var bars=rows.map(function(r){
+    var v=val(r);
+    return '<li class="bar-row"><span class="bar-name">'+esc(r.name)+'</span><span class="bar-track"><span class="bar-fill" style="width:'+(v?Math.max(2,100*v/mx):0)+'%"></span></span><span class="bar-val">'+(pm?f1(v):v)+'</span></li>';
+  }).join('');
+  var tbl=rows.map(function(r){
+    return '<tr><td><span class="pn">'+esc(r.name)+'</span></td><td>'+r.tot+'</td><td>'+(r.gp||DASH)+'</td><td>'+f1(r.pg)+'</td><td>'+r.high+'</td></tr>';
+  }).join('');
+  return head+
+    (demo?'<p class="note"><b>Sample data.</b> These are made-up numbers for placeholder players, shown only so you can see the chart. <button class="btn sm" data-act="demo-off">Hide sample</button></p>':'')+
+    '<div class="strip"><div><span class="k">Deflection leader</span><span class="v">'+(pm?f1(top.pg):top.tot)+'</span><span class="s">'+esc(top.name)+'</span></div>'+
+    '<div><span class="k">Team total</span><span class="v">'+teamTot+'</span><span class="s">'+gCount+' game'+(gCount===1?'':'s')+' charted</span></div>'+
+    '<div><span class="k">Team per game</span><span class="v">'+(gCount?f1(teamTot/gCount):DASH)+'</span><span class="s">across charted games</span></div></div>'+
+    '<div class="panel"><div style="display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:center;margin-bottom:8px"><h2 style="margin:0">Deflections by player</h2>'+
+    '<div class="seg" style="margin:0"><button data-act="defmode" data-m="total" aria-pressed="'+(!pm)+'">Total</button><button data-act="defmode" data-m="pg" aria-pressed="'+pm+'">Per game</button></div></div>'+
+    '<ol class="bars">'+bars+'</ol></div>'+
+    '<h2>Team deflections by game</h2><div class="scroll" style="padding:10px 6px 4px">'+trendSvg(items)+'</div>'+
+    '<h2>Player detail</h2><div class="scroll"><table style="min-width:460px"><thead><tr><th>Player</th><th>Total</th><th>GP</th><th>Per game</th><th>Single-game high</th></tr></thead><tbody>'+tbl+'</tbody></table></div>'+
+    '<p class="fine">A deflection is any touch that disrupts a pass or dribble without the defender gaining possession. Counts come from the program statistician. Per-game uses games played from the season stats.</p>';
+}
+
+function viewTeam(){
+  var r=teamRecord(), G=r.n, st=S.settings;
+  var sum=function(k){return S.players.reduce(function(s,p){return s+n(p[k])},0)};
+  var pct=function(m,a){return sum(a)>0?(100*sum(m)/sum(a)).toFixed(1):DASH};
+  var pgv=function(v){return G>0?(v/G).toFixed(1):DASH};
+  var tDefl=0; S.games.forEach(function(g){Object.keys(g.defl||{}).forEach(function(k){tDefl+=n(g.defl[k])})});
+  var ppg=G?r.pf/G:null, opp=G?r.pa/G:null, mar=G?(r.pf-r.pa)/G:null;
+  var nxt=gamesByDate().filter(function(g){return !played(g)})[0];
+  var nextHtml=nxt?'<div class="next"><span class="k">Next game</span><b>'+esc(nxt.opp||'TBD')+'</b><span>'+fmtDate(nxt.date)+(nxt.time?' · '+esc(nxt.time):'')+(nxt.venue?' · '+esc(nxt.venue):'')+'</span></div>':'';
+  var cell=function(k,v,s){return '<div><span class="k">'+k+'</span><span class="v">'+v+'</span>'+(s?'<span class="s">'+s+'</span>':'')+'</div>'};
+  var log=gamesByDate().map(function(g){
+    var res=played(g)?'<span class="res '+(g.pf>g.pa?'w':'l')+'">'+(g.pf>g.pa?'W':'L')+' '+g.pf+'–'+g.pa+'</span>':'<span class="dim">Upcoming</span>';
+    var typ={Reg:'Regular season',Tourn:'Tournament',District:'District',Region:'Region',State:'State'}[g.type]||'';
+    return '<tr><td>'+fmtDate(g.date)+'</td><td class="left dim">'+esc(g.time||'TBD')+'</td><td class="left"><b>'+esc(g.opp||'TBD')+'</b>'+(g.type&&g.type!=='Reg'?' <span class="dim">· '+typ+'</span>':'')+'</td><td class="left dim">'+({H:'Home',A:'Away',N:'Neutral'}[g.loc]||'')+'</td><td class="left dim">'+esc(g.venue||'')+'</td><td>'+res+'</td></tr>';
+  }).join('');
+  var shoot=[['Field goal %',pct('fgm','fga')],['3-point %',pct('tpm','tpa')],['Free throw %',pct('ftm','fta')],['Rebounds / game',pgv(sum('reb'))],['Assists / game',pgv(sum('ast'))],['Steals / game',pgv(sum('stl'))],['Blocks / game',pgv(sum('blk'))],['Turnovers / game',pgv(sum('tov'))],['Deflections / game',pgv(tDefl)]];
+  return '<h1>Team stats</h1><p class="lede">'+esc(st.team)+' · '+esc(st.season.replace('-','–'))+' · '+esc(st.district)+'</p>'+
+    '<div class="strip">'+cell('Overall',rec(r.w,r.l),'')+cell('District',rec(r.dw,r.dl),'')+cell('Home',rec(r.hw,r.hl),'')+cell('Away',rec(r.aw,r.al),'')+
+    cell('Points / game',f1(ppg),'')+cell('Opp. points / game',f1(opp),'')+cell('Scoring margin',mar==null?DASH:(mar>0?'+':'')+mar.toFixed(1),'')+cell('Streak',r.streak||DASH,'')+'</div>'+nextHtml+
+    (G?'':'<p class="note">The season is at 0–0. Results, scoring and shooting numbers appear here after the first game is entered.</p>')+
+    '<h2>Team totals</h2><div class="strip">'+shoot.map(function(s){return '<div><span class="k">'+s[0]+'</span><span class="v">'+s[1]+'</span></div>'}).join('')+'</div>'+
+    '<h2>Game log</h2>'+
+    (S.games.length?'<div class="scroll"><table style="min-width:780px"><thead><tr><th>Date</th><th class="left">Time</th><th class="left">Opponent</th><th class="left">Site</th><th class="left">Location</th><th>Result</th></tr></thead><tbody>'+log+'</tbody></table></div>':
+      '<div class="empty"><strong>No games on the schedule yet.</strong><br>Games are added by program staff in Admin, with scores entered after the final buzzer.</div>')+
+    '<h2>Program</h2><div class="panel"><ul class="staff"><li><b>'+esc(st.coach)+'</b><span>Head coach</span></li>'+
+    S.staff.map(function(s){return '<li><b>'+esc(s.name)+'</b><span>'+esc(s.role)+'</span></li>'}).join('')+
+    '<li><b>'+esc(st.home)+'</b><span>Home court</span></li><li><b>'+esc(st.district)+'</b><span>KHSAA alignment</span></li></ul></div>';
+}
+
+function histKey(h){var m=/\d{4}/.exec(h.year||''); return m?+m[0]:9999}
+function viewHistory(){
+  var items=S.history.map(function(h,i){return {h:h,i:i}}).sort(function(a,b){return histKey(a.h)-histKey(b.h)||a.i-b.i});
+  return '<h1>Tiger basketball history</h1>'+
+    '<p class="lede">Saint Xavier High School of Louisville, Kentucky has played basketball since 1911. These are the moments that shaped the program, from the first state title in 1926 to the 2026 Sweet 16 final.</p>'+
+    '<div class="strip">'+S.facts.map(function(f){return '<div><span class="k">'+esc(f.label)+'</span><span class="v" style="font-size:'+(String(f.value).length>12?'20px':'34px')+'">'+esc(f.value)+'</span></div>'}).join('')+'</div>'+
+    '<ol class="tl">'+items.map(function(it){return '<li><div class="yr">'+esc(it.h.year)+'</div><div class="bd"><h3>'+esc(it.h.title)+'</h3><p>'+esc(it.h.body)+'</p></div></li>'}).join('')+'</ol>'+
+    '<h2>Sources</h2><ul class="src">'+HIST_SOURCES.map(function(s){return '<li><a href="'+s[1]+'" target="_blank" rel="noopener">'+esc(s[0])+'</a></li>'}).join('')+'</ul>';
+}
+
+/* ---------- admin ---------- */
+function viewAdmin(){
+  if(!unlocked){
+    return '<div class="gate"><h1>Staff sign-in</h1><p class="lede">Enter the admin password to edit rosters, stats, games, deflections and history.</p>'+
+      '<form id="gate-form" autocomplete="off"><label class="f" for="pw">Password<input id="pw" type="password" autocomplete="off" required></label>'+
+      '<p class="err" id="gate-err" role="alert"></p><div><button class="btn primary" type="submit">Unlock</button></div></form></div>';
+  }
+  var tabs=[['roster','Roster & stats'],['games','Games'],['defl','Deflections'],['history','History'],['site','Team & site']];
+  var panel={roster:aRoster,games:aGames,defl:aDefl,history:aHistory,site:aSite}[adminTab]();
+  return '<div class="adminbar"><h1 style="margin:0">Admin</h1><button class="btn sm" data-act="lock">Lock</button></div>'+
+    (writeOk===false?'<p class="warn">This account can view the site but cannot save changes. Ask the page owner for Contributor access.</p>':'')+
+    (!db?'<p class="warn">Saving is not available in this view. Open the page from Claude while signed in to save changes.</p>':'')+
+    '<div class="atabs" role="group" aria-label="Admin sections">'+tabs.map(function(t){return '<button data-act="atab" data-t="'+t[0]+'" aria-pressed="'+(adminTab===t[0])+'">'+t[1]+'</button>'}).join('')+'</div>'+
+    panel+
+    '<div class="savebar"><span class="st'+(saveBad?' bad':dirty?' dirty':'')+'" id="save-st">'+saveText()+'</span><span style="display:flex;gap:8px;flex-wrap:wrap">'+
+    '<button class="btn sm" data-act="backup">Download backup</button><button class="btn sm" data-act="discard" id="b-discard"'+(dirty?'':' disabled')+'>Discard changes</button>'+
+    '<button class="btn primary" data-act="save" id="b-save"'+(dirty?'':' disabled')+'>Save changes</button></span></div>';
+}
+function saveText(){return saveMsg||(dirty?'Unsaved changes':'All changes saved')}
+function statInput(o,k){return '<td class="s"><input type="number" inputmode="numeric" min="0" step="1" data-num="0" data-path="players|'+o.id+'|'+k+'" value="'+n(o[k])+'" aria-label="'+k+' for '+esc(o.name)+'"></td>'}
+function aRoster(){
+  var cols=[['gp','GP'],['pts','PTS'],['reb','REB'],['ast','AST'],['stl','STL'],['blk','BLK'],['tov','TO'],['fgm','FGM'],['fga','FGA'],['tpm','3PM'],['tpa','3PA'],['ftm','FTM'],['fta','FTA']];
+  var rows=S.players.map(function(p){
+    return '<tr><td class="nm"><input data-path="players|'+p.id+'|name" value="'+esc(p.name)+'" aria-label="Player name"></td>'+
+      '<td class="s"><input data-path="players|'+p.id+'|num" value="'+esc(p.num)+'" aria-label="Jersey number" style="text-align:center"></td>'+
+      '<td class="t"><select data-path="players|'+p.id+'|cls" aria-label="Class">'+['Fr','So','Jr','Sr'].map(function(c){return '<option'+(p.cls===c?' selected':'')+'>'+c+'</option>'}).join('')+'</select></td>'+
+      '<td class="t"><input data-path="players|'+p.id+'|pos" value="'+esc(p.pos)+'" aria-label="Position"></td>'+
+      '<td class="t"><input data-path="players|'+p.id+'|ht" value="'+esc(p.ht)+'" aria-label="Height"></td>'+
+      cols.map(function(c){return statInput(p,c[0])}).join('')+
+      '<td><button class="btn sm danger" data-act="del-player" data-id="'+p.id+'" aria-label="Remove '+esc(p.name)+'">Remove</button></td></tr>';
+  }).join('');
+  return '<p class="hint">Enter season totals for each player. Per-game averages and shooting percentages are calculated for you. Jersey numbers for most players are carried over from last season, so confirm them here.</p>'+
+    '<div class="scroll"><table class="edit"><thead><tr><th class="left">Name</th><th>#</th><th>Class</th><th>Pos</th><th>Ht</th>'+cols.map(function(c){return '<th>'+c[1]+'</th>'}).join('')+'<th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<p style="margin:12px 0 0"><button class="btn" data-act="add-player">Add player</button></p>';
+}
+function aGames(){
+  var opts=function(list,cur){return list.map(function(o){return '<option value="'+o[0]+'"'+(cur===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')};
+  var rows=gamesByDate().map(function(g){
+    var pa='games|'+g.id+'|';
+    return '<tr><td class="m"><input type="date" data-path="'+pa+'date" value="'+esc(g.date)+'" aria-label="Date"></td>'+
+      '<td class="m"><input data-path="'+pa+'opp" value="'+esc(g.opp)+'" placeholder="Opponent" aria-label="Opponent"></td>'+
+      '<td class="m"><input data-path="'+pa+'time" value="'+esc(g.time)+'" placeholder="7:30 PM" aria-label="Time"></td>'+
+      '<td class="m"><input data-path="'+pa+'venue" value="'+esc(g.venue)+'" placeholder="Location" aria-label="Location"></td>'+
+      '<td class="t"><select data-path="'+pa+'loc" aria-label="Site">'+opts([['H','Home'],['A','Away'],['N','Neutral']],g.loc)+'</select></td>'+
+      '<td class="m"><select data-path="'+pa+'type" aria-label="Game type">'+opts([['Reg','Regular season'],['Tourn','Tournament'],['District','District'],['Region','Region'],['State','State']],g.type)+'</select></td>'+
+      '<td class="s"><input type="number" inputmode="numeric" min="0" data-num="null" data-path="'+pa+'pf" value="'+(g.pf==null?'':g.pf)+'" aria-label="St. X score"></td>'+
+      '<td class="s"><input type="number" inputmode="numeric" min="0" data-num="null" data-path="'+pa+'pa" value="'+(g.pa==null?'':g.pa)+'" aria-label="Opponent score"></td>'+
+      '<td><button class="btn sm danger" data-act="del-game" data-id="'+g.id+'">Remove</button></td></tr>';
+  }).join('');
+  return '<p class="hint">Add each game when it is scheduled. Leave both scores blank until it is final. Games count toward the record once both scores are entered.</p>'+
+    (S.games.length?'<div class="scroll"><table class="edit" style="min-width:1120px"><thead><tr><th class="left">Date</th><th class="left">Opponent</th><th class="left">Time</th><th class="left">Location</th><th>Site</th><th>Type</th><th>St. X</th><th>Opp.</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="empty">No games yet.</div>')+
+    '<p style="margin:12px 0 0"><button class="btn" data-act="add-game">Add game</button></p>';
+}
+function aDefl(){
+  var gs=gamesByDate();
+  if(!gs.length) return '<div class="empty"><strong>Add a game first.</strong><br>Deflections are logged per game, so each game becomes a column here.<br><button class="btn" data-act="atab" data-t="games">Go to Games</button></div>';
+  return '<p class="hint">Enter deflections for each player in each game. The deflection chart and team numbers update from these counts.</p>'+
+    '<div class="scroll"><table class="edit" style="min-width:0"><thead><tr><th class="left">Player</th>'+gs.map(function(g){return '<th title="'+esc(g.opp)+'">'+shortDate(g.date)+'<br><span style="text-transform:none;letter-spacing:0;font-weight:500">'+esc((g.opp||'').slice(0,10))+'</span></th>'}).join('')+'</tr></thead><tbody>'+
+    S.players.map(function(p){
+      return '<tr><td class="left"><b>'+esc(p.name)+'</b></td>'+gs.map(function(g){
+        var v=(g.defl||{})[p.id];
+        return '<td class="t"><input type="number" inputmode="numeric" min="0" step="1" data-num="0" data-path="defl|'+g.id+'|'+p.id+'" value="'+(v?v:'')+'" aria-label="'+esc(p.name)+' deflections, '+shortDate(g.date)+'"></td>';
+      }).join('')+'</tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function aHistory(){
+  return '<p class="hint">Edit the timeline and the quick facts shown on the History page. Entries sort by their first four-digit year.</p><h2 style="margin-top:8px">Quick facts</h2><div class="rows">'+
+    S.facts.map(function(f){return '<div class="rowcard two"><label class="f">Label<input data-path="facts|'+f.id+'|label" value="'+esc(f.label)+'"></label><label class="f">Value<input data-path="facts|'+f.id+'|value" value="'+esc(f.value)+'"></label><button class="btn sm danger" data-act="del-fact" data-id="'+f.id+'" style="margin-top:20px">Remove</button></div>'}).join('')+
+    '</div><p style="margin:12px 0 0"><button class="btn" data-act="add-fact">Add fact</button></p><h2>Timeline</h2><div class="rows">'+
+    S.history.map(function(h){return '<div class="rowcard"><label class="f">Year<input data-path="history|'+h.id+'|year" value="'+esc(h.year)+'"></label><label class="f">Title<input data-path="history|'+h.id+'|title" value="'+esc(h.title)+'"></label><button class="btn sm danger" data-act="del-hist" data-id="'+h.id+'" style="margin-top:20px">Remove</button><label class="f wide">Story<textarea data-path="history|'+h.id+'|body">'+esc(h.body)+'</textarea></label></div>'}).join('')+
+    '</div><p style="margin:12px 0 0"><button class="btn" data-act="add-hist">Add entry</button></p>';
+}
+function aSite(){
+  var st=S.settings, fld=function(k,l){return '<label class="f">'+l+'<input data-path="set|'+k+'|" value="'+esc(st[k])+'"></label>'};
+  return '<div class="form-grid">'+fld('season','Season label')+fld('coach','Head coach')+fld('home','Home court')+fld('district','District and region')+
+    '<label class="f">Brand color<span style="display:flex;gap:8px;align-items:center"><input type="color" data-path="set|brand|" value="'+esc(/^#[0-9a-f]{6}$/i.test(st.brand)?st.brand:'#12543F')+'" aria-label="Brand color"><button class="btn sm" data-act="brand-reset">Reset</button></span></label></div>'+
+    '<h2>Coaching staff</h2><div class="rows">'+
+    S.staff.map(function(s){return '<div class="rowcard two"><label class="f">Name<input data-path="staff|'+s.id+'|name" value="'+esc(s.name)+'"></label><label class="f">Role<input data-path="staff|'+s.id+'|role" value="'+esc(s.role)+'"></label><button class="btn sm danger" data-act="del-staff" data-id="'+s.id+'" style="margin-top:20px">Remove</button></div>'}).join('')+
+    '</div><p style="margin:12px 0 0"><button class="btn" data-act="add-staff">Add staff member</button></p>'+
+    '<h2>Starter data</h2><p class="hint">Restores the projected 2026–27 roster and the built-in history, and clears all games, stats and deflections. Nothing changes for visitors until you save.</p>'+
+    (confirmReset?'<button class="btn danger" data-act="reset-yes">Yes, restore starter data</button> <button class="btn" data-act="reset-no">Cancel</button>':'<button class="btn danger" data-act="reset-ask">Restore starter data</button>');
+}
+
+/* ---------- render ---------- */
+function applyBrand(){var b=S.settings.brand; if(/^#[0-9a-f]{6}$/i.test(b)) document.documentElement.style.setProperty('--brand',b)}
+function updateChrome(){
+  var r=teamRecord();
+  $('#h-rec').textContent=rec(r.w,r.l);
+  $('#h-lbl').textContent=S.settings.season.replace('-','–')+' record';
+  var rt=route(), base=rt==='players-deflections'?'players':rt;
+  document.querySelectorAll('.tabs a').forEach(function(a){
+    if(a.dataset.r===base) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+  });
+  updateFoot();
+}
+function updateFoot(){
+  var t={offline:'· showing built-in copy',slow:'· live data is slow to load',error:'· live data unavailable'}[dataNote]||'';
+  $('#foot-status').textContent=t;
+}
+function render(){
+  applyBrand();
+  var r=route();
+  $('#main').innerHTML={players:viewPlayers,'players-deflections':viewDeflections,team:viewTeam,history:viewHistory,admin:viewAdmin}[r]();
+  updateChrome();
+}
+function toast(msg){var t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(function(){t.classList.remove('on')},2600)}
+function refreshSavebar(){
+  var s=$('#save-st'); if(!s) return;
+  s.textContent=saveText(); s.className='st'+(saveBad?' bad':dirty?' dirty':'');
+  var a=$('#b-save'),b=$('#b-discard'); if(a) a.disabled=!dirty; if(b) b.disabled=!dirty;
+}
+function markDirty(){dirty=true; saveMsg=''; saveBad=false; refreshSavebar()}
+
+/* ---------- data layer ---------- */
+async function save(){
+  if(!db){toast('Saving is not available in this view.');return}
+  saveMsg='Saving…'; saveBad=false; refreshSavebar();
+  try{
+    await db.doc('stx/season').set({v:1,data:clone(S),savedAt:new Date().toISOString()});
+    dirty=false; lastSaved=clone(S); saveMsg='Saved'; saveBad=false; refreshSavebar(); toast('Changes saved');
+  }catch(e){
+    saveMsg=(e&&e.code==='invalid_argument')?'This account can’t save changes. Ask the page owner for Contributor access.':'Save failed. Try again in a moment.';
+    saveBad=true; refreshSavebar();
+  }
+}
+async function initData(){
+  try{
+    var c=window.claude;
+    if(!c||!c.use){dataNote='offline';updateFoot();return}
+    try{ var user=await c.use('user'); if(user&&user.can){ var w=await user.can('data.write'); writeOk=(w===true||w===false)?w:null; } }catch(e){}
+    db=await c.use('db');
+    if(!db){dataNote='offline';updateFoot();if(route()==='admin'&&unlocked)render();return}
+    var timer=setTimeout(function(){dataNote='slow';updateFoot()},10000);
+    db.doc('stx/season').onSnapshot(function(snap){
+      clearTimeout(timer); dataNote='';
+      var d=snap.exists?snap.data():null;
+      if(d&&d.data&&!dirty){ S=normalize(d.data); lastSaved=clone(S); }
+      if(!(dirty&&route()==='admin')) render(); else updateFoot();
+    },function(){clearTimeout(timer);dataNote='error';updateFoot()});
+    if(route()==='admin'&&unlocked&&!dirty) render();
+  }catch(e){dataNote='offline';updateFoot()}
+}
+
+/* ---------- events ---------- */
+function setPath(path,val){
+  var p=path.split('|'), col=p[0], id=p[1], f=p[2], o;
+  if(col==='set'){ S.settings[id]=val; if(id==='brand') applyBrand(); return }
+  if(col==='defl'){
+    var gm=S.games.find(function(x){return x.id===id}); if(!gm) return;
+    gm.defl=gm.defl||{}; if(!val) delete gm.defl[f]; else gm.defl[f]=val; return;
+  }
+  o=(S[col]||[]).find(function(x){return x.id===id}); if(o) o[f]=val;
+}
+function onField(e){
+  var el=e.target; if(!el.dataset||!el.dataset.path) return;
+  var v=el.value;
+  if(el.dataset.num!==undefined){ v=(v==='')?(el.dataset.num==='null'?null:0):Math.max(0,n(v)); }
+  setPath(el.dataset.path,v); markDirty();
+  if(el.dataset.path.indexOf('set|season')===0||el.dataset.path.indexOf('games|')===0) updateChrome();
+}
+async function sha(s){
+  var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return Array.prototype.map.call(new Uint8Array(b),function(x){return x.toString(16).padStart(2,'0')}).join('');
+}
+async function onGate(e){
+  e.preventDefault();
+  var err=$('#gate-err'), pw=$('#pw').value;
+  if(Date.now()<lockUntil){err.textContent='Too many attempts. Wait a few seconds and try again.';return}
+  if(!(window.crypto&&crypto.subtle)){err.textContent='This view cannot verify passwords. Open the page in a browser or the Claude app.';return}
+  var h=await sha(PW_SALT+pw);
+  if(h===PW_HASH){ unlocked=true; fails=0; try{sessionStorage.setItem('stxAdmin',h)}catch(x){} render(); }
+  else { fails++; if(fails>=5){lockUntil=Date.now()+15000;fails=0} err.textContent='That password is not correct.'; $('#pw').value=''; $('#pw').focus(); }
+}
+function addTo(col,obj){S[col].push(obj); markDirty(); render()}
+function delFrom(col,id){S[col]=S[col].filter(function(x){return x.id!==id}); markDirty(); render()}
+var ACTS={
+  sort:function(el){var k=el.dataset.key; if(sortKey===k) sortDir=-sortDir; else {sortKey=k; sortDir=(k==='name'||k==='cls')?1:-1} render()},
+  defmode:function(el){defMode=el.dataset.m; render()},
+  'demo-on':function(){demo=true;render()},
+  'demo-off':function(){demo=false;render()},
+  lock:function(){unlocked=false; try{sessionStorage.removeItem('stxAdmin')}catch(e){} render()},
+  atab:function(el){adminTab=el.dataset.t; confirmReset=false; render()},
+  'add-player':function(){addTo('players',{id:uid('p'),num:'',name:'New player',cls:'Fr',pos:'',ht:'',gp:0,pts:0,reb:0,ast:0,stl:0,blk:0,tov:0,fgm:0,fga:0,tpm:0,tpa:0,ftm:0,fta:0})},
+  'del-player':function(el){
+    var id=el.dataset.id; S.games.forEach(function(g){if(g.defl) delete g.defl[id]}); delFrom('players',id);
+  },
+  'add-game':function(){addTo('games',{id:uid('g'),date:'',time:'',venue:'',opp:'',loc:'H',type:'Reg',pf:null,pa:null,defl:{}})},
+  'del-game':function(el){delFrom('games',el.dataset.id)},
+  'add-hist':function(){addTo('history',{id:uid('h'),year:'',title:'',body:''})},
+  'del-hist':function(el){delFrom('history',el.dataset.id)},
+  'add-fact':function(){addTo('facts',{id:uid('f'),label:'',value:''})},
+  'del-fact':function(el){delFrom('facts',el.dataset.id)},
+  'add-staff':function(){addTo('staff',{id:uid('s'),name:'',role:''})},
+  'del-staff':function(el){delFrom('staff',el.dataset.id)},
+  'brand-reset':function(){S.settings.brand=SEED.settings.brand; markDirty(); render()},
+  'reset-ask':function(){confirmReset=true;render()},
+  'reset-no':function(){confirmReset=false;render()},
+  'reset-yes':function(){S=clone(SEED);confirmReset=false;markDirty();render();toast('Starter data restored. Save to publish it.')},
+  save:function(){save()},
+  discard:function(){S=clone(lastSaved);dirty=false;saveMsg='';saveBad=false;render();toast('Changes discarded')},
+  backup:async function(){
+    try{
+      var d=await window.claude.use('downloads');
+      if(!d){toast('Downloads are not available in this view.');return}
+      await d.save({filename:'st-x-basketball-'+S.settings.season+'.json',data:JSON.stringify(S,null,2)});
+    }catch(e){ if(!e||e.code!=='declined') toast('Could not create the backup.') }
+  }
+};
+document.addEventListener('click',function(e){
+  var el=e.target.closest&&e.target.closest('[data-act]'); if(!el) return;
+  var a=ACTS[el.dataset.act]; if(a){ e.preventDefault(); a(el); }
+});
+document.addEventListener('input',onField);
+document.addEventListener('change',onField);
+document.addEventListener('submit',function(e){ if(e.target&&e.target.id==='gate-form') onGate(e); });
+window.addEventListener('hashchange',function(){window.scrollTo(0,0);render()});
+
+render();
+initData();
+})();
+</script>
+
+</body></html>
