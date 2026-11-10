@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+/* Colors: real coolors.co palette "Studio Red"
+   0b090a 161a1d 660708 a4161a ba181b e5383b b1a7a6 d3d3d3 f5f3f4 ffffff
+   https://coolors.co/0b090a-161a1d-660708-a4161a-ba181b-e5383b-b1a7a6-d3d3d3-f5f3f4-ffffff
+   Only these colors, plus #5c5454 (a darker shade of b1a7a6 so small grey text passes contrast). */
+
+/* Default: inverted (light). */
+:root,
+:root[data-scheme="light"] {
+  --bg: #f5f3f4;
+  --surface: #ffffff;
+  --ink: #0b090a;
+  --muted: #5c5454;
+  --line: #d3d3d3;
+  --accent: #ba181b;
+  --accent-strong: #a4161a;
+  --on-accent: #ffffff;
+  --tally: #e5383b;      /* program (on air) */
+  --preview: #d3d3d3;    /* hover = preview */
+  --monitor: #0b090a;    /* multiviewer screen */
+  --bezel: #161a1d;      /* multiviewer frame */
+  --on-monitor: #f5f3f4;
+  --monitor-muted: #b1a7a6;
+  color-scheme: light;
+}
+
+/* Original Studio Red (dark). */
+:root[data-scheme="dark"] {
+  --bg: #0b090a;
+  --surface: #161a1d;
+  --ink: #f5f3f4;
+  --muted: #b1a7a6;
+  --line: #2b2e31;
+  --accent: #e5383b;
+  --accent-strong: #ba181b;
+  --on-accent: #0b090a;
+  --tally: #e5383b;
+  --preview: #d3d3d3;
+  --monitor: #000000;
+  --bezel: #161a1d;
+  --on-monitor: #f5f3f4;
+  --monitor-muted: #b1a7a6;
+  color-scheme: dark;
+}
+
+/* Font pairs (picked in the Look panel). */
+:root,
+:root[data-font="scoreboard"] { --display: var(--font-big-shoulders); --body: var(--font-public-sans); --display-weight: 800; --display-tracking: -0.005em; }
+:root[data-font="broadcast"] { --display: var(--font-saira-condensed); --body: var(--font-saira); --display-weight: 800; --display-tracking: -0.01em; }
+:root[data-font="control-room"] { --display: var(--font-chakra-petch); --body: var(--font-plex-sans); --display-weight: 700; --display-tracking: -0.02em; }
+:root[data-font="tall"] { --display: var(--font-sofia-condensed); --body: var(--font-sofia-sans); --display-weight: 800; --display-tracking: -0.01em; }
+:root[data-font="slab"] { --display: var(--font-zilla-slab); --body: var(--font-libre-franklin); --display-weight: 700; --display-tracking: -0.015em; }
+:root[data-font="original"] { --display: var(--font-space-grotesk); --body: var(--font-space-grotesk); --display-weight: 700; --display-tracking: -0.03em; }
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-on-accent: var(--on-accent);
+  --color-tally: var(--tally);
+  --color-preview: var(--preview);
+  --color-monitor: var(--monitor);
+  --color-bezel: var(--bezel);
+  --color-on-monitor: var(--on-monitor);
+  --color-monitor-muted: var(--monitor-muted);
+  --font-display: var(--display), system-ui, sans-serif;
+  --font-body: var(--body), system-ui, sans-serif;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--body), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* Display type: use class "font-display" + this for weight/tracking that follow the chosen font. */
+.display {
+  font-family: var(--display), system-ui, sans-serif;
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.95;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
